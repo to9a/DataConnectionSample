@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -156,8 +155,9 @@ public class ClientConnection {
             @Override
             public void run() {
                 int count = 0;
-                //送信回数を10回に制限する
-                while (count < 10) {
+                // 送信回数を10回に制限する
+                // ホスト情報を取得した場合は送信を停止する。
+                while (count < 10 && !mTcpIpAvailable) {
                     try {
                         DatagramSocket udpSocket = new DatagramSocket(udpPort);
                         udpSocket.setBroadcast(true);
@@ -199,7 +199,7 @@ public class ClientConnection {
                         writer = new BufferedWriter(new OutputStreamWriter(
                                 connectedSocket.getOutputStream()));
 
-                        writer.write(remoteIpAddress + ":" + "TCP/IP通信・・・" + "\r\n");
+                        writer.write(remoteIpAddress + " / " + "MSG :: TCP/IP通信・・・" + "\r\n");
                         writer.flush();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -208,7 +208,8 @@ public class ClientConnection {
                             writer.close();
                         } catch (IOException e) {
                             e.printStackTrace();
-                            Toast.makeText(mContext, "サーバーとの接続に失敗しました。", Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(mContext, "サーバーとの接続に失敗しました。", Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, "サーバーとの接続に失敗しました ");
                         }
                     }
 

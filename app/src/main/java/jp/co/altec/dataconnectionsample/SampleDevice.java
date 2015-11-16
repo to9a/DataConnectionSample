@@ -27,7 +27,7 @@ public class SampleDevice {
     public String toString() {
         return "SampleDevice { " +
                                 "device name : " + deviceName +
-                                "device Ip Address : " + deviceIpAddress +
+                                " device Ip Address : " + deviceIpAddress +
                              "}";
     }
 }

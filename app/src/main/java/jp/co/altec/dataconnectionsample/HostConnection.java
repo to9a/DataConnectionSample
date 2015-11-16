@@ -3,7 +3,6 @@ package jp.co.altec.dataconnectionsample;
 import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -72,7 +71,7 @@ public class HostConnection {
                         address = new String(buf, 0, length);
 
                         // 送信元情報の取得
-                        Log.d(TAG, "receive socketAddress is " + packet.getSocketAddress().toString() + "packet data : " + address);
+                        Log.d(TAG, "receive socketAddress is " + packet.getSocketAddress().toString() + " packet data : " + address);
 
                         // 受信したIPアドレスへ自分のIPアドレスを通知
                         returnIpAdress(address);
@@ -184,7 +183,8 @@ public class HostConnection {
                     serverSocket = new ServerSocket(tcpPort);
                     //ゲストからの接続が完了するまで待って処理を進める
                     connectedSocket = serverSocket.accept();
-                    Toast.makeText(mContext, "接続されました " + connectedSocket.getRemoteSocketAddress().toString(), Toast.LENGTH_LONG).show();
+//                    Toast.makeText(mContext, "接続されました " + connectedSocket.getRemoteSocketAddress().toString(), Toast.LENGTH_LONG).show();
+                    Log.d(TAG, "接続されました " + connectedSocket.getRemoteSocketAddress().toString());
 
                     //この後はconnectedSocketに対してInputStreamやOutputStreamを用いて入出力を行ったりする
                     BufferedReader in = new BufferedReader(new InputStreamReader(connectedSocket.getInputStream()));

@@ -2,6 +2,7 @@ package jp.co.altec.dataconnectionsample;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
+    private final String TAG = "DEBUG";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,20 +36,24 @@ public class MainActivity extends Activity {
                 // ゲストからのIPアドレス受信可能状態とする。
                 mHostConnection.createReceiveUdpSocket();
 
-                new Thread() {
-                    @Override
-                    public void run() {
-                        while (!mHostConnection.isTcpIpAvailable()) {
-                            try {
-                                sleep(500);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        Toast.makeText(getApplicationContext(), "TCP/IP通信開始(ホスト)", Toast.LENGTH_SHORT).show();
-                        mHostConnection.connect();
-                    }
-                }.start();
+                Log.d(TAG, "//// TCP/IP通信開始(ホスト)  ////");
+                mHostConnection.connect();
+
+
+//                new Thread() {
+//                    @Override
+//                    public void run() {
+//                        while (!mHostConnection.isTcpIpAvailable()) {
+//                            try {
+//                                sleep(500);
+//                            } catch (InterruptedException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                        Log.d(TAG, "//// TCP/IP通信開始(ホスト)  ////");
+//                        mHostConnection.connect();
+//                    }
+//                }.start();
             }
         }
     }
@@ -81,7 +87,7 @@ public class MainActivity extends Activity {
                             }
                         }
 
-                        Toast.makeText(getApplicationContext(), "TCP/IP通信開始(ゲスト)", Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "//// TCP/IP通信開始(ゲスト)  ////");
                         mClientConnection.connect(mClientConnection.getHostDevice().getDeviceIpAddress());
                     }
                 }.start();
