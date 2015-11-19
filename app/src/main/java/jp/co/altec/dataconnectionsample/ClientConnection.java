@@ -181,9 +181,9 @@ public class ClientConnection {
         }.start();
     }
 
+    boolean close = false;
     //IPアドレスが判明したホストに対して接続を行う
     void connect(final String remoteIpAddress){
-        waiting = false;
         new Thread() {
             @Override
             public void run() {
@@ -193,22 +193,35 @@ public class ClientConnection {
                     }
 
                     //この後はホストに対してInputStreamやOutputStreamを用いて入出力を行ったりする
-                    BufferedWriter writer = null;
+                    BufferedWriter out = null;
                     try {
                         // メッセージ送信オブジェクトのインスタンス化
-                        writer = new BufferedWriter(new OutputStreamWriter(
+                        out = new BufferedWriter(new OutputStreamWriter(
                                 connectedSocket.getOutputStream()));
 
-                        writer.write(remoteIpAddress + " / " + "MSG :: TCP/IP通信・・・" + "\r\n");
-                        writer.flush();
+                        BufferedReader in = new BufferedReader(new InputStreamReader(connectedSocket.getInputStream()));
+
+                        while(!close) {
+                            // [IPAddress]\r\n[msg]\r\n
+                            Log.d(TAG, "送信: " + mSendData);
+                            out.write(getMyIpAddress() + "::" + mSendData + "\r\n");
+                            out.flush();
+
+                            String line = in.readLine();
+                            Log.d(TAG, "受信: " + line);
+                            if (!line.isEmpty()) {
+                                mReciveData = line;
+                            }
+                        }
+                        connectedSocket.close();
+                        connectedSocket = null;
                     } catch (IOException e) {
                         e.printStackTrace();
                     }finally{
                         try {
-                            writer.close();
+                            out.close();
                         } catch (IOException e) {
                             e.printStackTrace();
-//                            Toast.makeText(mContext, "サーバーとの接続に失敗しました。", Toast.LENGTH_SHORT).show();
                             Log.d(TAG, "サーバーとの接続に失敗しました ");
                         }
                     }
@@ -222,5 +235,19 @@ public class ClientConnection {
                 }
             }
         }.start();
+    }
+
+    void disconnect() {
+        close = true;
+    }
+
+    String mSendData;
+    String mReciveData;
+    public void sendData(String data) {
+        mSendData = data;
+    }
+
+    public String getData() {
+        return mReciveData;
     }
 }

@@ -173,6 +173,11 @@ public class HostConnection {
     ServerSocket serverSocket;
     Socket connectedSocket;
 
+    public String getRecvData() {
+        return mRecvData;
+    }
+
+    String mRecvData;
     //ゲストからの接続を待つ処理
     void connect(){
         new Thread(){
@@ -192,6 +197,8 @@ public class HostConnection {
                     String line;
                     while ( (line = in.readLine()) != null ) {
                         Log.d(TAG,"受信: " + line);
+                        mRecvData = line;
+
                         out.println(line);
                         Log.d(TAG, "送信: " + line);
                     }
@@ -202,5 +209,15 @@ public class HostConnection {
                 }
             }
         }.start();
+    }
+
+    String mSendData;
+    String mReciveData;
+    public void sendData(String data) {
+        mSendData = data;
+    }
+
+    public String getData() {
+        return mReciveData;
     }
 }

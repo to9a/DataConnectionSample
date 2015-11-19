@@ -2,22 +2,60 @@ package jp.co.altec.dataconnectionsample;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+
 public class MainActivity extends Activity {
     private final String TAG = "DEBUG";
+    Handler mHandler = new Handler();
+    Runnable mRunnable = new Runnable() {
+        @Override
+        public void run() {
+            String rcvData = "";
+            if (mClientConnection != null) {
+//                Log.d(TAG, "receive client message....");
+                rcvData = mClientConnection.getData();
+            } else if (mHostConnection != null) {
+//                Log.d(TAG, "receive host message....");
+                rcvData = mHostConnection.getData();
+            }
+            TextView textView = (TextView)findViewById(R.id.recvMsg);
+            textView.setText(rcvData);
+
+            mHandler.postDelayed(mRunnable,300);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Button bt = (Button)findViewById(R.id.button);
+        bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mClientConnection != null) {
+                    Log.d(TAG, "send client message....");
+                    mClientConnection.sendData(((EditText) findViewById(R.id.editText)).getText().toString());
+                } else if (mHostConnection != null) {
+                    Log.d(TAG, "send host message....");
+                    mHostConnection.sendData(((EditText) findViewById(R.id.editText)).getText().toString());
+                }
+            }
+        });
+
+        mHandler.postDelayed(mRunnable, 300);
     }
 
     HostConnection mHostConnection;
@@ -38,22 +76,6 @@ public class MainActivity extends Activity {
 
                 Log.d(TAG, "//// TCP/IP通信開始(ホスト)  ////");
                 mHostConnection.connect();
-
-
-//                new Thread() {
-//                    @Override
-//                    public void run() {
-//                        while (!mHostConnection.isTcpIpAvailable()) {
-//                            try {
-//                                sleep(500);
-//                            } catch (InterruptedException e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                        Log.d(TAG, "//// TCP/IP通信開始(ホスト)  ////");
-//                        mHostConnection.connect();
-//                    }
-//                }.start();
             }
         }
     }
@@ -94,7 +116,6 @@ public class MainActivity extends Activity {
 
             }
         }
-
     }
 
     @Override
